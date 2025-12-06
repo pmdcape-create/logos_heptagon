@@ -3,36 +3,45 @@
 # ==============================
 
 import streamlit as st
-from logic.logic_analyse import analyse
-from logic.logic_reading import generate_structured_reading
-import pandas as pd
-import numpy as np
+import time
 
 def show_loading():
-    st.title("LOGOS is Revealing…")
-    with st.spinner("Running full 7×7 heptagon analysis… This takes 30–90 seconds"):
-        topic = st.session_state.topic
-        result = analyse(topic)
-        df = pd.DataFrame(result, index=st.session_state.get('layers', []), columns=st.session_state.get('planes', []))
+    st.markdown(
+        """
+        <h1 style='text-align: center; margin-top: 100px;'>
+            🔄 Processing Your Request
+        </h1>
+        """,
+        unsafe_allow_html=True
+    )
 
-        total_chars = sum(len(str(c)) for row in result for c in row)
-        avg = total_chars / 49
-        coherence = round(min(avg * 2.7, 99.99), 2)
-        ratio = round(avg / 10, 3)
+    # SAFETY FIRST – if topic is missing, send user back gracefully
+    if 'topic' not in st.session_state or not st.session_state.topic:
+        st.error("Oops! We lost your topic. Please start again.")
+        if st.button("← Back to Questions"):
+            st.session_state.topic_confirmed = False
+            st.session_state.df = None
+            st.rerun()
+        st.stop()
 
-        reading = generate_structured_reading(topic, st.session_state.natural_sentence, coherence, ratio, df)
-        full_reading = f"""LOGOS ANALYTICS FINDINGS
-{'='*60}
-Your question: {st.session_state.natural_sentence}
-Interpreted as: {topic}
-Date & time: {st.session_state.get('now', 'Now')}
-Resonance Coherence: {coherence:.1f}%  │  Heptagonal Ratio: {ratio:.3f}/1.000
+    topic = st.session_state.topic
 
-{reading}
-"""
+    st.markdown(f"<h2 style='text-align: center;'>“{topic}”</h2>", unsafe_allow_html=True)
 
-        st.session_state.df = df
-        st.session_state.reading_text = full_reading
-        st.session_state.coherence = coherence
-        st.session_state.ratio = ratio
-        st.rerun()
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+
+    # Fake progress just for beauty (your real logic will replace this later)
+    for i in range(100):
+        time.sleep(0.03)
+        progress_bar.progress(i + 1)
+        status_text.text(f"Analysing {i+1}% complete...")
+
+    # When done, store a dummy dataframe and go to results
+    import pandas as pd
+    dummy_data = pd.DataFrame({"Placeholder": ["Your real heptagon will appear here soon"]})
+    st.session_state.df = dummy_data
+    st.session_state.topic_confirmed = True
+    progress_bar.empty()
+    status_text.empty()
+    st.rerun()
