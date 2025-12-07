@@ -7,7 +7,8 @@ def extract_key_topics(client, question):
     Question: {question}
     Example Output: career-transition-risk-personal-growth
     """
-    response = client.chat.completions.create(model="llama3-8b-8192",  # Or gpt-3.5-turbo
+    
+    response = client.chat.completions.create(model="llama-3.1-8b-instant",  # Use the current Groq model
                                               messages=[{"role": "user", "content": prompt}])
     topics_str = response.choices[0].message.content.strip()
     return [t.strip() for t in topics_str.split("-") if t.strip()]
