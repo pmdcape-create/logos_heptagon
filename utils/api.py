@@ -12,7 +12,7 @@ def setup_api_key():
         st.session_state.api_ready = bool(st.session_state.api_key)
         
     # The Groq model to use for the validation check
-    validation_model = "llama3-8b"
+    validation_model = "llama-3.1-8b-instant"
     
     with st.expander("Enter Your Groq API Key (Temporary)", expanded=not st.session_state.api_ready):
         # We need a temporary variable for the text input value
