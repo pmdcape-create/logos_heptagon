@@ -1,10 +1,12 @@
 import streamlit as st
 import os
 from groq import Groq  # Assumes installed
+from openai import OpenAI
 
 def setup_api_key():
     if 'api_key' not in st.session_state:
         st.session_state.api_key = st.secrets.get("GROQ_API_KEY", None)  # Fallback for secrets
+        
     
     with st.expander("Enter Your API Key (Temporary)"):
         key = st.text_input("Paste Groq/OpenAI Key:", type="password", value=st.session_state.api_key or "")
