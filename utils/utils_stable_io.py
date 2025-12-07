@@ -118,7 +118,7 @@ def grid_to_html(df: pd.DataFrame, topic: str, coherence: float, ratio: float) -
     <!DOCTYPE html>
     <html>
     <head>
-        <title>LOGOS 7x7 Grid – {topic}</title>
+        <title>LOGOS 7×7 Grid – {topic}</title>     <!-- recommended: use the proper × symbol -->
         <meta charset="utf-8">
         <style>
             body {{ font-family: Arial, sans-serif; margin: 40px; background: #f8fafc; color: #1e3a8a; }}
