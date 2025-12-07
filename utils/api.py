@@ -32,7 +32,8 @@ def setup_api_key():
                 # Test validation
                 try:
                     # Determine client based on key prefix (pk- for Groq, sk- for OpenAI)
-                    is_groq = key.lower().startswith("pk-")
+                    
+                    is_groq = key.lower().startswith("pk-") or key.lower().startswith("gsk_")
                     
                     # Instantiate client
                     client = Groq(api_key=key) if is_groq else OpenAI(api_key=key)
