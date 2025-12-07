@@ -23,3 +23,5 @@ matrix_questions = [
 
 # Make them available when imported
 __all__ = ["planes", "layers", "matrix_questions"]
+PLANES = planes
+LAYERS = layers
