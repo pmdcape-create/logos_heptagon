@@ -146,5 +146,6 @@ def get_llm_client():
         
     # SIMPLIFIED: Only return the Groq client
     return Groq(api_key=key)
+  
 
 # The redundant/conflicting logic at the end of the original file is removed.
