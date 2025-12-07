@@ -5,8 +5,8 @@ from openai import OpenAI # Need to import OpenAI client
 
 def setup_api_key():
     
-    # 1. INITIALIZE SESSION STATE (MOVED INSIDE THE FUNCTION)
-    # This logic must be indented under the function definition.
+    # 1. INITIALIZE SESSION STATE
+    # This block must be indented under the function definition.
     if 'api_key' not in st.session_state:
         # Load the key from secrets only if it hasn't been loaded yet.
         st.session_state.api_key = st.secrets.get("GROQ_API_KEY", None)
@@ -15,17 +15,15 @@ def setup_api_key():
         # Initialize api_ready based on whether a key was successfully loaded from secrets.
         st.session_state.api_ready = bool(st.session_state.api_key)
         
-    # If the key is already loaded and ready, we don't need to show the expander on every run.
-    # However, since you want to allow changing it, we continue to display the input/button.
+    # If the key is already loaded and ready, we return early, but still show the input widget below
     
     with st.expander("Enter Your API Key (Temporary)", expanded=not st.session_state.api_ready):
-        # We need a temporary variable for the text input value to avoid errors during validation
+        # We need a temporary variable for the text input value
         input_value = st.session_state.api_key if st.session_state.api_ready else ""
         
         key = st.text_input(
             "Paste Groq/OpenAI Key:", 
             type="password", 
-            # Use the input_value from the session state or blank if not ready
             value=input_value
         )
         
@@ -33,17 +31,11 @@ def setup_api_key():
             if key:
                 # Test validation
                 try:
-                    # Determine client based on key format (approximate)
-                    # In utils/api.py, inside the try block:
-
-                # ...
-                try:
-                    # Check if the key starts with the Groq prefix 'pk-'
-                    is_groq = key.lower().startswith("pk-") 
-    
-                    # Use Groq client if it's a Groq key, otherwise use OpenAI
+                    # Determine client based on key prefix (pk- for Groq, sk- for OpenAI)
+                    is_groq = key.lower().startswith("pk-")
+                    
+                    # Instantiate client
                     client = Groq(api_key=key) if is_groq else OpenAI(api_key=key)
-                    # ...
                     
                     # Simple test prompt
                     model = "llama3-8b-8192" if is_groq else "gpt-3.5-turbo"
@@ -62,6 +54,7 @@ def setup_api_key():
                     st.rerun() 
                     
                 except Exception as e:
+                    # Catch the validation error here
                     st.error(f"Invalid key or validation failed. Error: {e}")
             else:
                 st.error("Enter a key.")
@@ -75,7 +68,11 @@ def get_llm_client():
     if not key:
         return None # Return None if no key is found
         
-    # Determine client based on key format
+    # Determine client based on key prefix
+    is_groq = key.lower().startswith("pk-")
+    
+    # Use Groq client if it's a Groq key, otherwise use OpenAI
+    return Groq(api_key=key) if is_groq else OpenAI(api_key=key)
     is_groq = "groq" in key.lower() and not "openai" in key.lower()
     
     return Groq(api_key=key) if is_groq else OpenAI(api_key=key)
