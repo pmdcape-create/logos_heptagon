@@ -2,13 +2,19 @@
 # UI_RESULTS
 # ==============================
 
+# /mount/src/logos_heptagon/ui/ui_results.py
+
+# ==============================
+# UI_RESULTS
+# ==============================
+
 import streamlit as st
 from utils.exports import export_pdf, export_html_grid
 
 def show_results():
     
-    # 🚨 CRITICAL GUARD CLAUSE: Check if necessary data exists 🚨
-    # If the summary text OR the dataframe is missing, stop the function and show an error.
+    # 🚨 CRITICAL GUARD CLAUSE: Must be the very first execution step 🚨
+    # Check if the summary text OR the dataframe is missing.
     if st.session_state.summary_text is None or st.session_state.df is None:
         st.error("Data Missing: Cannot display or export results. The previous LLM processing step likely failed to generate the summary or the 7x7 Grid.")
         st.info("Please refresh the app and try confirming your topic again. Check the app logs for details on the LLM failure.")
@@ -38,6 +44,7 @@ def show_results():
     if st.session_state.api_ready:
         col_pdf, col_html = st.columns(2)
         with col_pdf:
+            # The function call is now safe
             st.download_button("📄 Download Summary Report (PDF)", 
                                data=export_pdf(st.session_state.summary_text, st.session_state.df),
                                file_name="logos_heptagon_summary.pdf",
@@ -49,3 +56,4 @@ def show_results():
                                mime="text/html")
     else:
         st.warning("Set API key in sidebar to download.")
+        
