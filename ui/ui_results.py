@@ -6,6 +6,16 @@ import streamlit as st
 from utils.exports import export_pdf, export_html_grid
 
 def show_results():
+    
+    # 🚨 CRITICAL GUARD CLAUSE: Check if necessary data exists 🚨
+    # If the summary text OR the dataframe is missing, stop the function and show an error.
+    if st.session_state.summary_text is None or st.session_state.df is None:
+        st.error("Data Missing: Cannot display or export results. The previous LLM processing step likely failed to generate the summary or the 7x7 Grid.")
+        st.info("Please refresh the app and try confirming your topic again. Check the app logs for details on the LLM failure.")
+        return # Exit the function immediately to prevent the TypeError
+    
+    # --- If the guard passes, the data is safe to use ---
+
     st.header("📊 Summary Assessment")
     
     # On-Screen Summary
@@ -16,7 +26,7 @@ def show_results():
     with col2:
         st.metric("Heptagonal Ratio", f"{st.session_state.ratio}:1")
         st.caption("Balance between planes; ideal ~3:1.")
-    
+        
     st.markdown("**Key Insights:**")
     st.write(st.session_state.summary_text)
     
