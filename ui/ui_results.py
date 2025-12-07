@@ -3,59 +3,39 @@
 # ==============================
 
 import streamlit as st
-import os
-import pandas as pd
+from utils.exports import export_pdf, export_html_grid
 
 def show_results():
-    st.markdown("<h1 style='text-align: center; margin-top: 50px;'>Your LOGOS Heptagon</h1>", 
-                unsafe_allow_html=True)
-
-    topic = st.session_state.get('topic', 'your topic')
-    st.markdown(f"<h3 style='text-align: center; color: #666;'>Analysis of: <strong>“{topic}”</strong></h3><br>", 
-                unsafe_allow_html=True)
-
-    if 'df' not in st.session_state or st.session_state.df is None:
-        st.error("No analysis yet.")
-        st.stop()
-
-    df = st.session_state.df
-    summary = st.session_state.get('summary', 'No summary available.')
-
-    # Summary always shows
-    st.markdown("### Overall Assessment")
-    st.write(summary)
-
-    # Demo vs. Full: Use API key presence as proxy (for testing)
-    is_paid = 'XAI_API_KEY' in os.environ or 'OPENAI_API_KEY' in os.environ
-
-    if not is_paid:
-        st.info("🔓 Demo Mode: Free sample. Unlock full + PDF for R50 via PayFast.")
-        # Teaser: First 3 rows + "..."
-        teaser_df = df.head(3).copy()
-        teaser_df = pd.concat([teaser_df, pd.DataFrame([["...", "...", "..."]], columns=df.columns)], ignore_index=True)
-        st.dataframe(teaser_df, use_container_width=True, hide_index=True)
-        st.line_chart(teaser_df['strength'].head(3))
-        
-        if st.button("Unlock Full (Test Mode)"):
-            st.session_state.paid = True
-            st.rerun()
-    else:
-        st.success("✅ Full Mode Unlocked! (Powered by Grok xAI)")
-        st.caption(f"Generated with {st.session_state.get('api_used', 'API')}")
-        st.dataframe(df, use_container_width=True, hide_index=True)
-        st.line_chart(df.set_index('name')['strength'])
-        
-        # Placeholder PDF (we'll make real next)
-        st.download_button(
-            label="📄 Download Full PDF Report",
-            data=f"Full LOGOS Heptagon for '{topic}':\n\n{summary}\n\n{df.to_string()}",  # Simple text for now
-            file_name=f"logos_heptagon_{topic.replace(' ', '_')}.txt",  # .txt until real PDF
-            mime="text/plain"
-        )
-
-    st.markdown("---")
-    col1, col2, col3 = st.columns([1,2,1])
+    st.header("📊 Summary Assessment")
+    
+    # On-Screen Summary
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Resonance Coherence Score", f"{st.session_state.coherence_score}%")
+        st.caption("High % = Strong alignment in metaphysical planes.")
     with col2:
-        if st.button("New Analysis", type="primary", use_container_width=True):
-            st.session_state.clear()
-            st.rerun()
+        st.metric("Heptagonal Ratio", f"{st.session_state.ratio}:1")
+        st.caption("Balance between planes; ideal ~3:1.")
+    
+    st.markdown("**Key Insights:**")
+    st.write(st.session_state.summary_text)
+    
+    # 7x7 Grid Preview (non-downloadable)
+    st.subheader("7×7 Resonance Grid Preview")
+    st.dataframe(st.session_state.df, use_container_width=True)
+    
+    # Downloads (Visible only if API ready)
+    if st.session_state.api_ready:
+        col_pdf, col_html = st.columns(2)
+        with col_pdf:
+            st.download_button("📄 Download Summary Report (PDF)", 
+                               data=export_pdf(st.session_state.summary_text, st.session_state.df),
+                               file_name="logos_heptagon_summary.pdf",
+                               mime="application/pdf")
+        with col_html:
+            st.download_button("📊 Download 7×7 Grid (HTML)", 
+                               data=export_html_grid(st.session_state.df),
+                               file_name="logos_heptagon_grid.html",
+                               mime="text/html")
+    else:
+        st.warning("Set API key in sidebar to download.")
