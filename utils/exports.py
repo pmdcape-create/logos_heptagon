@@ -1,4 +1,4 @@
-# utils/exports.py  (or keep as utils_stable_io.py – both work)
+# /mount/src/logos_heptagon/utils/exports.py
 import datetime
 from io import BytesIO
 import pandas as pd
@@ -11,10 +11,11 @@ from reportlab.lib.colors import HexColor
 
 
 # ==============================
-# PDF & HTML EXPORTERS – your original beautiful code, fully preserved
+# PDF EXPORTER: Renamed from reading_to_pdf to export_pdf
 # ==============================
 
-def reading_to_pdf(text: str) -> BytesIO:
+def export_pdf(text: str) -> BytesIO:
+    """Creates a PDF buffer from formatted text content."""
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=landscape(A4),
                             rightMargin=60, leftMargin=60,
@@ -54,7 +55,12 @@ def reading_to_pdf(text: str) -> BytesIO:
     return buffer
 
 
-def grid_to_html(df: pd.DataFrame, topic: str, coherence: float, ratio: float) -> BytesIO:
+# ==============================
+# HTML EXPORTER: Renamed from grid_to_html to export_html_grid
+# ==============================
+
+def export_html_grid(df: pd.DataFrame, topic: str, coherence: float, ratio: float) -> BytesIO:
+    """Creates an HTML buffer for the 7x7 grid data."""
     buffer = BytesIO()
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
