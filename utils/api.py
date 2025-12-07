@@ -34,8 +34,16 @@ def setup_api_key():
                 # Test validation
                 try:
                     # Determine client based on key format (approximate)
-                    is_groq = "groq" in key.lower() and not "openai" in key.lower()
+                    # In utils/api.py, inside the try block:
+
+                # ...
+                try:
+                    # Check if the key starts with the Groq prefix 'pk-'
+                    is_groq = key.lower().startswith("pk-") 
+    
+                    # Use Groq client if it's a Groq key, otherwise use OpenAI
                     client = Groq(api_key=key) if is_groq else OpenAI(api_key=key)
+                    # ...
                     
                     # Simple test prompt
                     model = "llama3-8b-8192" if is_groq else "gpt-3.5-turbo"
