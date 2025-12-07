@@ -4,8 +4,16 @@ from groq import Groq # Assumes installed
 from openai import OpenAI # Need to import OpenAI client
 
 def setup_api_key():
-    if 'api_key' not in st.session_state:
-        st.session_state.api_key = st.secrets.get("GROQ_API_KEY", None)  # Fallback for secrets
+    
+    # In utils/api.py (Corrected Initial State Setup)
+
+if 'api_key' not in st.session_state:
+    # 1. Load the key from secrets only if it hasn't been loaded yet.
+    st.session_state.api_key = st.secrets.get("GROQ_API_KEY", None)
+    
+if 'api_ready' not in st.session_state:
+    # 2. Initialize api_ready based on whether a key was successfully loaded from secrets.
+    st.session_state.api_ready = bool(st.session_state.api_key)
         
     
     with st.expander("Enter Your API Key (Temporary)"):
