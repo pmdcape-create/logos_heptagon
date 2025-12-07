@@ -22,6 +22,7 @@ def setup_api_key():
                     os.environ["API_KEY"] = key  # For utils
                     st.session_state.api_ready = True
                     st.success("Key validated!")
+                    st.rerun()
                     return key
                 except Exception as e:
                     st.error(f"Invalid key: {e}")
