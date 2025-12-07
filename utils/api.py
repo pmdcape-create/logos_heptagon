@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from groq import Groq # Assumes installed
-from openai import OpenAI # Need to import OpenAI client
+
 
 def setup_api_key():
     
