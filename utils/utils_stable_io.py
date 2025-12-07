@@ -47,7 +47,7 @@ def reading_to_pdf(text: str) -> BytesIO:
             elements.append(Paragraph(f"<b>{clean}</b>", styles['HeadingBold']))
         else:
             elements.append(Paragraph(clean, styles['BodyTextCustom']))
-        elements.append(1, 4))
+        elements.append(Spacer(1, 4))
 
     doc.build(elements)
     buffer.seek(0)
