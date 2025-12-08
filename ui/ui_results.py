@@ -2,58 +2,67 @@
 # UI_RESULTS
 # ==============================
 
-# /mount/src/logos_heptagon/ui/ui_results.py
-
-# ==============================
-# UI_RESULTS
-# ==============================
-
 import streamlit as st
-from utils.exports import export_pdf, export_html_grid
+from logic.exporters import grid_to_html, reading_to_pdf   # these two functions already exist and work
 
 def show_results():
-    
-    # 🚨 CRITICAL GUARD CLAUSE: Must be the very first execution step 🚨
-    # Check if the summary text OR the dataframe is missing.
-    if st.session_state.summary_text is None or st.session_state.df is None:
-        st.error("Data Missing: Cannot display or export results. The previous LLM processing step likely failed to generate the summary or the 7x7 Grid.")
-        st.info("Please refresh the app and try confirming your topic again. Check the app logs for details on the LLM failure.")
-        return # Exit the function immediately to prevent the TypeError
-    
-    # --- If the guard passes, the data is safe to use ---
+    # This function is only called when analysis is truly finished
+    if st.session_state.get("df") is None or not st.session_state.get("topic_confirmed", False):
+        return
 
-    st.header("📊 Summary Assessment")
-    
-    # On-Screen Summary
+    st.success("LOGOS analysis complete")
+
+    st.markdown(f"**Your question:** {st.session_state.natural_sentence}")
+    st.markdown(
+        f"**Coherence:** {st.session_state.coherence:.1f}%  │  "
+        f"**Ratio:** {st.session_state.ratio:.3f}/1.000"
+    )
+
+    st.subheader("LOGOS FINDINGS & INTERPRETATION")
+    # This is your missing summary assessment — now back!
+    st.markdown(st.session_state.reading_text)
+
+    st.markdown("---")
+    st.subheader("7×7 Heptagon Data Grid")
+
+    # Beautiful wrapped grid
+    styled_df = st.session_state.df.style.set_properties(
+        **{
+            'text-align': 'left',
+            'white-space': 'pre-wrap',
+            'font-size': '14px',
+            'padding': '10px'
+        }
+    )
+    st.dataframe(styled_df, use_container_width=True)
+
+    # ─────────────────────────────────────
+    # Download buttons (exactly like before)
+    # ─────────────────────────────────────
     col1, col2 = st.columns(2)
+
     with col1:
-        st.metric("Resonance Coherence Score", f"{st.session_state.coherence_score}%")
-        st.caption("High % = Strong alignment in metaphysical planes.")
+        html_bytes = grid_to_html(
+            st.session_state.df,
+            st.session_state.topic,
+            st.session_state.coherence,
+            st.session_state.ratio
+        ).getvalue()
+
+        st.download_button(
+            label="Download 7×7 Grid (HTML File)",
+            data=html_bytes,
+            file_name=f"LOGOS_Grid_{st.session_state.topic.replace(' ', '_')}.html",
+            mime="text/html"
+        )
+
     with col2:
-        st.metric("Heptagonal Ratio", f"{st.session_state.ratio}:1")
-        st.caption("Balance between planes; ideal ~3:1.")
-        
-    st.markdown("**Key Insights:**")
-    st.write(st.session_state.summary_text)
-    
-    # 7x7 Grid Preview (non-downloadable)
-    st.subheader("7×7 Resonance Grid Preview")
-    st.dataframe(st.session_state.df, use_container_width=True)
-    
-    # Downloads (Visible only if API ready)
-    if st.session_state.api_ready:
-        col_pdf, col_html = st.columns(2)
-        with col_pdf:
-            # The function call is now safe
-            st.download_button("📄 Download Summary Report (PDF)", 
-                               data=export_pdf(st.session_state.summary_text, st.session_state.df),
-                               file_name="logos_heptagon_summary.pdf",
-                               mime="application/pdf")
-        with col_html:
-            st.download_button("📊 Download 7×7 Grid (HTML)", 
-                               data=export_html_grid(st.session_state.df),
-                               file_name="logos_heptagon_grid.html",
-                               mime="text/html")
-    else:
-        st.warning("Set API key in sidebar to download.")
+        pdf_bytes = reading_to_pdf(st.session_state.reading_text).getvalue()
+
+        st.download_button(
+            label="Download Findings (Landscape PDF)",
+            data=pdf_bytes,
+            file_name=f"LOGOS_Findings_{st.session_state.topic.replace(' ', '_')}.pdf",
+            mime="application/pdf"
+        )
         
