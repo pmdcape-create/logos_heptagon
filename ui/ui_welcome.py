@@ -3,22 +3,17 @@
 # ==============================
 
 import streamlit as st
-import plotly.graph_objects as go
-import numpy as np
-from config import PLANES  # Assumes config.py has PLANES = ["Foundation", "Vitality", ...]
-
-def show_welcome():
-    st.title("🌟 LOGOS Heptagon Revealer")
-    st.markdown("**A 7×7 Metaphysical Diagnostic for Real-Life Questions Powered by AI**")
-    
-    # Heptagon Gem: Interactive 3D Model
-    # ── ui/welcome.py  (or directly in main.py ─────────────────────
-import streamlit as st
 import streamlit.components.v1 as components
 
+# These are the correct 7 planes (exactly as in your original beautiful gem)
 PLANES = [
-    "Purpose", "Information/Truth", "Design", 
-    "Creation", "Refinement", "Revelation", "Continuity"
+    "Purpose",
+    "Information/Truth",
+    "Design",
+    "Creation",
+    "Refinement",
+    "Revelation",
+    "Continuity"
 ]
 
 def show_welcome():
@@ -30,7 +25,9 @@ def show_welcome():
 
     st.markdown("### The Heptagon Gem – 7 Planes of Resonance")
 
-    # ←←← THIS IS THE FIXED, BEAUTIFUL, ORIGINAL GEM AGAIN ←←←
+    # ──────────────────────────────────────────────
+    # THE FIXED, BEAUTIFUL, FULLY WORKING HEPTAGON
+    # ──────────────────────────────────────────────
     heptagon_html = """
     <!DOCTYPE html>
     <html lang="en">
@@ -41,14 +38,14 @@ def show_welcome():
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
         <style>
-            body {font-family:'Inter',sans-serif;background:transparent;margin:0;padding:20px 0;overflow:hidden}
+            body{font-family:'Inter',sans-serif;background:transparent;margin:0;padding:20px 0;overflow:hidden}
             .heptagon-container{position:relative;width:360px;height:360px;margin:0 auto}
-            .center-dot{position:absolute;top:50%;left:50%;width:34px;height:34px;background:#fca5a5;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 18px rgba(252,165,165,0.9);z-index:5}
-            .point{position:absolute;width:80px;height:80px;background:white;border-radius:16px;box-shadow:0 5px 15px rgba(0,0,0,0.18);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:6px;cursor:pointer;transition:all .3s;z-index:10}
-            .point:hover,.point.active{transform:scale(1.1) translateY(-6px);box-shadow:0 15px 30px rgba(0,0,0,0.3);z-index:30}
+            .center-dot{position:absolute;top:50%;left:50%;width:34px;height:34px;background:#fca5a5;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 18px rgba(252,165,165,.9);z-index:5}
+            .point{position:absolute;width:80px;height:80px;background:white;border-radius:16px;box-shadow:0 5px 15px rgba(0,0,0,.18);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:6px;cursor:pointer;transition:all .3s;z-index:10}
+            .point:hover,.point.active{transform:scale(1.1) translateY(-6px);box-shadow:0 0 15px 30px rgba(0,0,0,.3);z-index:30}
             .layer-number{font-weight:700;font-size:1.4rem;color:#1e293b}
             .pane-name{font-weight:600;font-size:0.72rem;color:#475569;margin-top:3px}
-            #popup{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:90%;max-width:300px;background:white;border:2px solid #1e3a8a;border-radius:14px;padding:16px;box-shadow:0 12px 40px rgba(30,58,138,0.45);z-index:100;pointer-events:none;opacity:0;transition:opacity .3s;text-align:left}
+            #popup{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:90%;max-width:300px;background:white;border:2px solid #1e3a8a;border-radius:14px;padding:16px;box-shadow:0 12px 40px rgba(30,58,138,.45);z-index:100;pointer-events:none;opacity:0;transition:opacity .3s;text-align:left}
             #popup.visible{opacity:1}
             #popup h4{margin:0 0 10px;font-size:16px;color:#1e3a8a}
             #popup p{margin:0;font-size:12px;line-height:1.45;color:#475569}
@@ -74,7 +71,7 @@ def show_welcome():
             let active=null;
             function pos(i){const a=Math.PI*2*i/7-Math.PI/2;return{x:CX+R*Math.cos(a),y:CY+R*Math.sin(a)};}
             function build(){
-                [...container.children].filter(c=>!c.classList?.contains('center-dot')&&c.id!=='popup')).forEach(c=>c.remove());
+                [...container.children].filter(c=>!c.classList?.contains('center-dot')&&c.id!=='popup').forEach(c=>c.remove());
                 let pts="",coords=[];
                 data.forEach((d,i)=>{let p=pos(i);coords.push({x:p.x,y:p.y,d});pts+=`${p.x},${p.y} `;});
                 const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
@@ -90,7 +87,7 @@ def show_welcome():
                     el.onmouseenter=_=>{
                         popup.innerHTML=`<h4>Layer ${o.d.l}: ${o.d.p}</h4><p>${o.d.i}</p>`;
                         popup.classList.add("visible");
-                        active&&active.classList.remove("active");el.classList.add("active");active=el;
+                        if(active)active.classList.remove("active");el.classList.add("active");active=el;
                     };
                     el.onmouseleave=_=>{if(active===el){el.classList.remove("active");popup.classList.remove("visible");active=null;}};
                     container.appendChild(el);
@@ -103,27 +100,17 @@ def show_welcome():
     </html>
     """
 
-    # This single line brings back the real gem
     components.html(heptagon_html, height=420, scrolling=False)
 
-    # Optional nice caption
-    st.caption("Hover over each plane to reveal its metaphysical role")
+    st.caption("Hover over any plane to see its metaphysical role")
 
-    # Big beautiful button
-    col1, col2, col3 = st.columns([1,2,1])
+    # ──────────────────────────────────────────────
+    # Big beautiful button to start the analysis
+    # ──────────────────────────────────────────────
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("I’m ready → Begin LOGOS Analysis", type="primary", use_container_width=True):
+        if st.button("I'm ready → Begin LOGOS Analysis", type="primary", use_container_width=True):
             st.session_state.first_run = False
             st.rerun()
 
     st.stop()
-    Welcome to the Heptagon – where questions meet cosmic structure.  
-    Enter a real-life dilemma, and let the 7×7 matrix reveal hidden resonances.  
-    """)
-    
-    if st.button("🚀 Start Analysis", type="primary"):
-        st.session_state.first_run = False
-        st.rerun()
-    
-    # Sample
-    st.markdown("**Sample Question:** Should I relocate for a new job?")
