@@ -71,7 +71,7 @@ def show_results():
         name = st.text_input("Your name (optional)")
         email = st.text_input("Your email", placeholder="you@example.com")
         message = st.text_area("Message / specific request")
-        submitted = st.form_submit_button("Send request to Paul")
+        submitted = st.form_submit_button("Send request to Jan")
 
         if submitted:
             try:
