@@ -1,16 +1,14 @@
 # logic/analysis.py
-# FULLY RESTORED ORIGINAL LOGOS HEPTAGON ENGINE
-# 49 sacred questions + beautiful, human, professional answers
+# FULLY RESTORED & PERFECTLY INDENTED LOGOS ENGINE
 
 import pandas as pd
 import streamlit as st
+import re
 from utils.api import get_llm_client
-
-# Import your planes & layers
 from config import planes as PLANES, layers as LAYERS
 
 # =============================================
-# THE 49 SACRED QUESTIONS (exact order you created)
+# 49 SACRED QUESTIONS (exact sacred order)
 # =============================================
 NODE_QUESTIONS = [
     # Layer 1 – Purpose
@@ -69,62 +67,10 @@ NODE_QUESTIONS = [
 
     # Layer 7 – Continuity (Divine)
     "What ultimate direction is being offered?",
+    "What ultimate direction is being offered?",
     "Where is divine consciousness itself steering?",
     "What divine alignment is possible here?",
     "What eternal continuity is seeking expression?",
     "What final-purpose vector is dominant?",
     "Where is the hand of Grace most evident?",
-    "What will remain when everything else falls away?"
-]
-
-SYSTEM_PROMPT = """
-You are the LOGOS Heptagon intelligence — a warm, wise, slightly formal metaphysical expert.
-Answer ONLY with the direct insight for this exact cell.
-One to three short, powerful sentences. Never use bullet points or numbering.
-Use precise terms when they are correct (quantum instantiation, karmic residue, revelation gate, etc.),
-but always make it understandable and beautiful to a normal intelligent person.
-Tone: friendly, encouraging, profound — like a trusted mentor.
-"""
-
-@st.cache_data(show_spinner=False)
-def run_full_analysis(_client, question: str, topics) -> tuple:
-    df = pd.DataFrame(index=LAYERS, columns=PLANES)
-    
-    progress = st.progress(0)
-    status = st.empty()
-    status.write("Running LOGOS 7×7 analysis…")
-
-    for idx, node_question in enumerate(NODE_QUESTIONS):
-        layer_idx = idx // 7
-        plane_idx = idx % 7
-        
-        messages = [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": f"User's real-life question: {question}\n\nSpecific node question: {node_question}"}
-        ]
-
-        try:
-            response = _client.chat.completions.create(
-                model="grok-beta",
-                messages=messages,
-                temperature=0.7,
-                max_tokens=180
-            )
-            answer = response.choices[0].message.content.strip()
-        except Exception as e:
-            answer = "(response delayed)"
-        
-        df.iat[layer_idx, plane_idx] = answer
-        
-        progress.progress((idx + 1) / 49)
-
-    status.empty()
-    progress.empty()
-
-    # Coherence calculation (your original method — kept exactly)
-    import re
-    all_text = " ".join(df.astype(str).values.flatten()).lower()
-    positive = len(re.findall(r'\b(alignment|flow|clarity|growth|harmony|resonance|grace|continuity|revelation)\b', all_text))
-    negative = len(re.findall(r'\b(blockage|tension|distortion|collapse|entropy|karmic|fracture)\b', all_text))
-    coherence = round(50 + (positive - negative) * 3.2, 1)
-    coherence = max
+   
