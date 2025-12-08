@@ -75,7 +75,7 @@ def show_results():
             try:
                 msg = MIMEMultipart()
                 msg['From'] = "logos@app.com"
-                msg['To'] = "YOUR_EMAIL_HERE@gmail.com"   # ← CHANGE THIS
+                msg['To'] = "janvanderwalt2025RE@gmail.com"   # ← CHANGE THIS
                 msg['Subject'] = f"LOGOS Request from {name or 'User'}"
 
                 body = f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}\n\nQuestion was: {question}"
@@ -97,7 +97,7 @@ def show_results():
 
                 server = smtplib.SMTP('smtp.gmail.com', 587)
                 server.starttls()
-                server.login("YOUR_EMAIL_HERE@gmail.com", "YOUR_APP_PASSWORD")  # ← use App Password!
+                server.login("janvanderwalt2025@gmail.com", "Jolize1118%@@")  # ← use App Password!
                 server.send_message(msg)
                 server.quit()
 
