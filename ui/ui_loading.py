@@ -5,8 +5,9 @@
 
 import streamlit as st
 import time
-from logic.analysis import run_full_analysis  # Assumes this computes df, summary, scores
-from utils.api import get_llm_client
+
+from logic.analysis import run_full_analysis
+from utils.api import get_llm_client   # ← add this line
 
 def show_loading():
     st.header("⚡ Computing Resonances")
@@ -14,7 +15,12 @@ def show_loading():
         client = get_llm_client()
         question = st.session_state.question
         topics = st.session_state.verified_topics
-        df, summary_text, coherence_score, ratio = run_full_analysis(client, question, topics)
+        # Get the client (this is how the new engine expects it)
+        client = get_llm_client()
+
+        # Now run the real sacred analysis
+        df, summary, coherence, ratio = run_full_analysis(client, question, topics)
+        
         st.session_state.df = df
         st.session_state.summary_text = summary_text
         st.session_state.coherence_score = coherence_score
