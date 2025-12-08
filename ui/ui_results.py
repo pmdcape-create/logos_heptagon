@@ -29,14 +29,15 @@ def show_results():
     st.markdown(f"**Coherence:** {coherence:.1f}%  │  **Ratio:** {ratio:.3f}/1.000")
 
     # Generate summary ONCE if not already done
-    if "reading_text == "" or "summary_generated" not in st.session_state:
+       
+    if not st.session_state.reading_text or "summary_generated" not in st.session_state:
         with st.spinner("Crafting your personal interpretation…"):
             try:
                 from logic.summary_generator import generate_summary
                 full_summary = generate_summary(df, question)
                 st.session_state.reading_text = full_summary
                 st.session_state.summary_generated = True
-            except:
+            except Exception as e:
                 st.session_state.reading_text = "Interpretation ready below."
 
     # Show the beautiful summary
