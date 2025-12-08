@@ -38,6 +38,16 @@ def show_results():
         'padding': '12px'
     }), use_container_width=True)
 
+# ====================== SUMMARY GENERATED ======================
+if "summary_generated" not in st.session_state:
+    with st.spinner("Crafting your personal summary..."):
+        from logic.summary_generator import generate_summary
+        summary = generate_summary(st.session_state.df, question)
+        st.session_state.reading_text = summary
+        st.session_state.summary_generated = True
+
+st.markdown("## LOGOS FINDINGS & INTERPRETATION")
+st.markdown(st.session_state.reading_text)
     # ====================== BUTTONS (exactly as you wanted) ======================
     col_a, col_b, col_c, col_d = st.columns(4)
 
