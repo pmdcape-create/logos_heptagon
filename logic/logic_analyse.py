@@ -1,42 +1,109 @@
-# ==============================
-# LOGIC_ANALYSIS (skeleton)
-# ==============================
-
-import time
+# logic/analysis.py
+import pandas as pd
 import streamlit as st
-from config import matrix_questions
+import re
+from utils.api import get_llm_client
+from config import planes as PLANES, layers as LAYERS
 
-def analyse(topic: str, llm):
-    matrix = []
-    with st.spinner("Running LOGOS 7×7 analysis…"):
-        for row in matrix_questions:
-            row_cells = []
-            for q in row:
-                prompt = f"""
-                You are a wise and friendly expert blending physics and metaphysics.
-                Topic: {topic}
-                Grid Question: {q}
+NODE_QUESTIONS = [
+    "From pure potential, what specific impulse is trying to become real through this situation?",
+    "What is the original spark of being behind this question?",
+    "What unique entity or event is seeking instantiation right now?",
+    "What is the divine intention wanting to take form here?",
+    "What seed of purpose is buried in this moment?",
+    "What is the soul-level reason this is appearing now?",
+    "What eternal pattern is choosing this exact vehicle of expression?",
 
-                Provide an answer for this exact node.
-                Blend universal truth, current physics concepts (entanglement, resonance, fields, non-locality), and the metaphysical LOGOS model.
-                Keep it concise (8–15 words), profound, and focused on interconnectedness.
-                If the topic involves speculative phenomena, acknowledge possible metaphysical interpretations while neutrally noting lack of direct empirical evidence.
-                """
+    "What truth is this situation protecting?",
+    "Where is information being sustained or distorted?",
+    "What identity or story is being maintained across time?",
+    "What feedback loop from higher layers is active?",
+    "What belief is currently defining continuity?",
+    "What data stream is governing perception?",
+    "What hidden knowledge is ready to surface?",
 
-                max_retries = 3
-                ans = "…"
-                for attempt in range(max_retries):
-                    try:
-                        ans = llm.invoke(prompt).content.strip()
-                        break
-                    except Exception as e:
-                        if "429" in str(e):
-                            wait = 60 if attempt == 0 else 120
-                            st.warning(f"Rate limit — pausing {wait}s (attempt {attempt + 1})")
-                            time.sleep(wait)
-                        else:
-                            st.error(f"Error: {e}")
-                            break
-                row_cells.append(ans)
-            matrix.append(row_cells)
-    return matrix
+    "How is this situation currently affecting its environment?",
+    "What impact pattern is already visible?",
+    "What observable outcome is being sculpted?",
+    "Where is the design most elegant or most fractured?",
+    "What environmental resonance is strongest?",
+    "What consequence field is forming?",
+    "What footprint will this leave in spacetime?",
+
+    "How are layers 1–3 currently interacting?",
+    "What is the arena of experience right now?",
+    "Where is spacetime being woven or torn?",
+    "What integration is succeeding or failing?",
+    "What is the current theatre of evolution?",
+    "What container is holding this process?",
+    "What alchemical vessel is active?",
+
+    "Where is choice or adaptation happening?",
+    "What probabilistic collapse is imminent?",
+    "What decision point carries the most weight?",
+    "Where is refinement pressure strongest?",
+    "What timeline branch is crystallising?",
+    "What free-will node is illuminated?",
+    "What quantum of decision is being offered?",
+
+    "What soul-level principle is governing this?",
+    "What law of coherence is being enforced?",
+    "What blueprint deviation or alignment exists?",
+    "What revelation gate is opening or closing?",
+    "What higher-order pattern is now visible?",
+    "What soul contract clause is active?",
+    "What governance structure is revealing itself?",
+
+    "What ultimate direction is being offered?",
+    "Where is divine consciousness itself steering?",
+    "What divine alignment is possible here?",
+    "What eternal continuity is seeking expression?",
+    "What final-purpose vector is dominant?",
+    "Where is the hand of Grace most evident?",
+    "What will remain when everything else falls away?"
+]
+
+SYSTEM_PROMPT = """
+You are the LOGOS Heptagon intelligence — a warm, wise, slightly formal metaphysical expert.
+Answer ONLY with the direct insight for this exact cell.
+One to three short, powerful sentences. Never use bullet points or numbering.
+Use precise terms when they are correct, but always make it understandable and beautiful.
+Tone: friendly, encouraging, profound — like a trusted mentor.
+"""
+
+@st.cache_data(show_spinner=False)
+def run_full_analysis(_client, question: str, topics) -> tuple:
+    df = pd.DataFrame(index=LAYERS, columns=PLANES)
+    
+    progress = st.progress(0)
+    status = st.empty()
+    status.write("Running sacred LOGOS 7×7 analysis…")
+
+    for idx, node_question in enumerate(NODE_QUESTIONS):
+        layer_idx = idx // 7
+        plane_idx = idx % 7
+        
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": f"User's real-life question: {question}\n\nSpecific node question: {node_question}"}
+        ]
+
+        try:
+            response = _client.chat.completions.create(
+                model="grok-beta",
+                messages=messages,
+                temperature=0.7,
+                max_tokens=180
+            )
+            answer = response.choices[0].message.content.strip()
+        except Exception:
+            answer = "(momentary pause in revelation)"
+
+        df.iat[layer_idx, plane_idx] = answer
+        progress.progress((idx + 1) / 49)
+
+    status.empty()
+    progress.empty()
+
+    # Coherence score
+    all_text = " ".join(df.astype(str).values
