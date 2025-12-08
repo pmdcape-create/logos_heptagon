@@ -1,63 +1,52 @@
 # ==============================
-# MAIN
+# main.py  – FINAL POLISHED VERSION
 # ==============================
 
 import sys
 from pathlib import Path
-sys.path.append(str(Path(__file__).parent))        # Must be first!
+sys.path.append(str(Path(__file__).parent))
 
-# Now safe to import local modules
 import streamlit as st
 from ui.ui_welcome import show_welcome
 from ui.ui_loading import show_loading
 from ui.ui_question import show_question_flow
 from ui.ui_results import show_results
-from utils.api import setup_api_key, get_llm_client
+from utils.api import setup_api_key
 
-# ============================== APP CONFIG ==============================
+# ============================== CONFIG ==============================
 st.set_page_config(page_title="LOGOS Heptagon Revealer", layout="wide")
 
-# ============================== SIDEBAR – API KEY ==============================
+# ============================== SIDEBAR ==============================
 with st.sidebar:
-    st.header("API Setup (Temporary)")
-    api_key = setup_api_key()                     # Returns key or None
-
+    st.header("API Setup")
+    api_key = setup_api_key()
     if api_key:
-        st.session_state.api_ready = True        # CRITICAL LINE
-        st.success("API Key Loaded! Downloads Unlocked.")
-        st.info("This is temporary. Future: Stripe integration.")
+        st.session_state.api_ready = True
+        st.success("API key valid – ready!")
     else:
         st.session_state.api_ready = False
-        st.warning("Enter your Grok API key to continue.")
 
-# ============================== INITIALIZE SESSION STATE ONCE ==============================
-if 'first_run' not in st.session_state:
+# ============================== SESSION STATE (once only) ==============================
+if "first_run" not in st.session_state:
     st.session_state.update({
         "first_run": True,
-        "topic": "",
-        "natural_sentence": "",
-        "topic_confirmed": False,
-        "df": None,
-        "reading_text": "",
-        "coherence": 0.0,
-        "ratio": 0.0,
-        "api_ready": False,           # will be overridden by sidebar above
+        "topic": "", "natural_sentence": "", "topic_confirmed": False,
+        "df": None, "reading_text": "", "coherence": 0.0, "ratio": 0.0,
+        "api_ready": False,
     })
 
 # ============================== MAIN FLOW ==============================
 if st.session_state.first_run:
     show_welcome()
-    st.session_state.first_run = False                    # only runs once
+    st.session_state.first_run = False
 
 else:
-    # User has passed the welcome screen
     if not st.session_state.api_ready:
-        st.warning("Please set up your API key in the sidebar to proceed.")
-        st.stop()                                          # blocks everything below
+        st.warning("Please enter your Grok API key in the sidebar first.")
+        st.stop()
 
-    # Normal flow
     if st.session_state.get("df") is not None:
-        show_results()
+        show_results()                      # ← now has Summary → Grid → Buttons
     elif st.session_state.get("topic_confirmed"):
         show_loading()
     else:
