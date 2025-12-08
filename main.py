@@ -9,6 +9,9 @@ from ui.ui_loading import show_loading
 from ui.ui_question import show_question_flow
 from ui.ui_results import show_results
 from utils.api import setup_api_key, get_llm_client  # For API sidebar
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent))   # ← THIS LINE FIXES EVERYTHING
 
 # ============================== # APP ENTRY POINT # ==============================
 st.set_page_config(page_title="LOGOS Heptagon Revealer", layout="wide")
