@@ -29,14 +29,19 @@ with st.sidebar:
         st.warning("Enter API key to enable downloads.")
 
 # Initialize session state
+# ============================== # INITIALIZE SESSION STATE # ==============================
 if 'first_run' not in st.session_state:
     st.session_state.first_run = True
-    st.session_state.api_ready = bool(api_key)
-    st.session_state.topic_confirmed = False
-    st.session_state.df = None
-    st.session_state.summary_text = None
-    st.session_state.coherence_score = None
-    st.session_state.ratio = None
+
+# ←←← ADD ALL THESE (safe defaults so results page never crashes)
+st.session_state.topic = ""
+st.session_state.natural_sentence = ""
+st.session_state.topic_confirmed = False
+st.session_state.df = None
+st.session_state.reading_text = ""
+st.session_state.coherence = 0.0
+st.session_state.ratio = 0.0
+st.session_state.api_ready = False
 
 if st.session_state.get('first_run', False):
     show_welcome()
